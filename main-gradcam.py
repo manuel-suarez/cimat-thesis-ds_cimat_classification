@@ -120,11 +120,9 @@ def generate_gradcam(model, image, label):
     targets = None
     with GradCAM(model=model, target_layers=target_layers) as cam:
         grayscale_cam = cam(input_tensor=image, targets=targets)[0, :]
-        print("image_np: ", image_np.shape, np.min(image_np), np.max(image_np))
         cam_image = show_cam_on_image(
             np.expand_dims(image_np, -1), grayscale_cam, use_rgb=True
         )
-    print("cam image: ", cam_image.shape)
     return np.squeeze(cam_image, 0)
 
 
@@ -133,8 +131,8 @@ def save_figure(figure_name, image, label, generated_masks):
     image = image.squeeze(0).squeeze(0)
     # label = label.squeeze(0)
 
-    axes[0].imshow(image)
-    axes[0].set_title("Image")
+    axes[0].imshow(image, cmap="gray")
+    axes[0].set_title("Oil" if label == 1 else "Not oil")
     axes[0].axis("off")
 
     for i, (epoch, mask) in enumerate(generated_masks.items()):
