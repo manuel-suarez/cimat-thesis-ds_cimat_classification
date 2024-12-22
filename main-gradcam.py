@@ -84,6 +84,7 @@ logging.basicConfig(
 
 # Initial configuration
 base_path = os.path.expanduser("~")
+data_path = os.path.join(base_path, "data", "cimat", "dataset-cimat")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 epochs = [int(epoch) for epoch in args.epochs]
 model_name = "classification"
@@ -168,22 +169,19 @@ def generate_figures(model, dataloader, weights_path, figures_path):
 if __name__ == "__main__":
     # Prepare data loaders with one image loading at a time to generate plots per item
     dataloaders = prepare_dataloaders(
-        base_path,
+        data_path,
         train_batch_size=1,
         valid_batch_size=1,
         test_batch_size=1,
-        return_train_names=True,
-        return_valid_names=True,
-        return_test_names=True,
-        max_train_images=args.max_train_images,
-        max_valid_images=args.max_valid_images,
-        max_test_images=args.max_test_images,
+        return_names=True,
+        max_images=args.max_images,
     )
     # Prepare model according to SLURM array task id
     model = build_model(
         model_name=model_name,
         encoder_name=encoder_name,
         in_channels=1,
+        model_type="classification",
     ).to(device)
     model.eval()
 
