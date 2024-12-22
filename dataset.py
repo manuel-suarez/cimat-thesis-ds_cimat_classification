@@ -56,9 +56,9 @@ class CimatDataset(Dataset):
             )
         )
         if self.return_names:
-            return image, self.labels[image_name], image_name
+            return image, float(self.labels[image_name]), image_name
         else:
-            return image, self.labels[image_name]
+            return image, float(self.labels[image_name])
 
 
 def prepare_dataloaders(

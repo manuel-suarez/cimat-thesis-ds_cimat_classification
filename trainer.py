@@ -40,6 +40,8 @@ class Trainer:
             self.optimizer.zero_grad()
             # Get predictions
             output = self.model(image)
+            # Squeeze dimension for binary classification
+            output = output.squeeze(dim=1)
             # Calculate loss and metrics
             loss = self.loss_fn(output, label)
             train_metrics = calculate_metrics(output, label)
@@ -66,6 +68,7 @@ class Trainer:
 
             with torch.no_grad():
                 output = self.model(image)
+                output = output.squeeze(dim=1)
                 loss = self.loss_fn(output, label)
                 valid_metrics = calculate_metrics(output, label)
 
