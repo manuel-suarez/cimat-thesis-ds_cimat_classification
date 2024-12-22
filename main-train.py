@@ -70,6 +70,7 @@ logging.basicConfig(
 epochs = args.epochs
 base_path = os.path.expanduser("~")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model_name = "classification"
 encoder_name = default(args.encoder_name, "base")
 logging.info(f"Device: {device}")
 logging.info(f"Encoder name: {encoder_name}")
@@ -97,8 +98,8 @@ if __name__ == "__main__":
     loss_fn = nn.BCEWithLogitsLoss()
 
     # Configure paths
-    metrics_path = os.path.join(args.metrics_path, encoder_name, "classification")
-    weights_path = os.path.join(args.weights_path, encoder_name, "classification")
+    metrics_path = os.path.join(args.metrics_path, encoder_name, model_name)
+    weights_path = os.path.join(args.weights_path, encoder_name, model_name)
     os.makedirs(metrics_path, exist_ok=True)
     os.makedirs(weights_path, exist_ok=True)
 
@@ -114,5 +115,8 @@ if __name__ == "__main__":
     )
     # Start training process
     trainer.fit([train_dataloader, valid_dataloader])
+    # Create flag file to indicate main script that weight models has been generated
+    f = open(os.path.join("outputs", encoder_name, model_name, "training.txt"), "x")
+    f.close()
     logging.info(args.done_message)
     print(args.done_message)
