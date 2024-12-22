@@ -43,10 +43,10 @@ for size in 18 34 50 101 152; do
     #fi
     #
     # Run gradcam
-    #if [ ! -f outputs/$encoder_name/$model_name/gradcam.txt ]; then
-    #  echo "run gradcam generation for $model_name, encoder=$encoder_name"
-    #  sbatch --job-name=${dataset}-${model_name}-${encoder_name}-GradCAM --output=outputs/$encoder_name/${model_name}/slurm_gradcam-%A.out run-gradcam.slurm $model_name $encoder_name 20,40,60,80,100
-    #fi
+    if [ ! -f outputs/$encoder_name/$model_name/gradcam.txt ]; then
+      echo "run gradcam generation for $model_name, encoder=$encoder_name"
+      sbatch --job-name=${dataset}-${model_name}-${encoder_name}-GradCAM --output=outputs/$encoder_name/${model_name}/slurm_gradcam-%A.out run-gradcam.slurm $model_name $encoder_name 20,40,60,80,100
+    fi
   done
 done
 
