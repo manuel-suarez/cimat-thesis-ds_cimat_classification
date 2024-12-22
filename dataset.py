@@ -53,7 +53,7 @@ class CimatDataset(Dataset):
                 0,
             )
         )
-        return image, self.labels[image_name]
+        return image, float(self.labels[image_name])
 
 
 def prepare_dataloaders(
