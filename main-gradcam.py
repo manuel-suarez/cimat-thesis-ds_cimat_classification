@@ -110,20 +110,28 @@ def generate_gradcam(model, image, label):
 
     # We are printing the model to check his layers
     # print(model)
-    target_layers = [model.classification]
+    target_layers = [
+        (
+            model.encoder.block5
+            if model.encoder.block5 is not None
+            else model.encoder.block4
+        )
+    ]
     targets = None
     with GradCAM(model=model, target_layers=target_layers) as cam:
         grayscale_cam = cam(input_tensor=image, targets=targets)[0, :]
+        print("image_np: ", image_np.shape, np.min(image_np), np.max(image_np))
         cam_image = show_cam_on_image(
             np.expand_dims(image_np, -1), grayscale_cam, use_rgb=True
         )
+    print("cam image: ", cam_image.shape)
     return np.squeeze(cam_image, 0)
 
 
 def save_figure(figure_name, image, label, generated_masks):
     fig, axes = plt.subplots(1, len(generated_masks) + 2, figsize=(15, 5))
     image = image.squeeze(0).squeeze(0)
-    label = label.squeeze(0)
+    # label = label.squeeze(0)
 
     axes[0].imshow(image)
     axes[0].set_title("Image")
@@ -135,9 +143,9 @@ def save_figure(figure_name, image, label, generated_masks):
         axes[i + 1].set_title(f"Gradcam epoch {epoch}")
         axes[i + 1].axis("off")
 
-    axes[-1].imshow(label, cmap="gray")
-    axes[-1].set_title("True label")
-    axes[-1].axis("off")
+    # axes[-1].imshow(label, cmap="gray")
+    # axes[-1].set_title("True label")
+    # axes[-1].axis("off")
 
     plt.tight_layout()
     plt.savefig(figure_name)
