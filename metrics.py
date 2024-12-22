@@ -28,15 +28,13 @@ def calculate_metrics(outputs, targets):
 
     # Metrics calculation
     accuracy = (TP + TN) / (TP + TN + FP + FN + 1e-7)
+    precision = TP / (TP + FP + 1e-7)
     specificity = TN / (TN + FP + 1e-7)
-    sensitivity = TP / (TP + FN + 1e-7)  # Recall
-    dice = 2 * TP / (2 * TP + FP + FN + 1e-7)
-    iou = TP / (TP + FP + FN + 1e-7)
+    recall = TP / (TP + FN + 1e-7)
 
     return {
         "accuracy": accuracy,
+        "precision": precision,
         "specificity": specificity,
-        "sensitivity": sensitivity,
-        "dice": dice,
-        "iou": iou,
+        "recall": recall,
     }
