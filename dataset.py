@@ -38,7 +38,14 @@ class CimatDataset(Dataset):
         not_oil_labels = {
             os.path.join(not_oil_dir, fname): 0 for fname in os.listdir(not_oil_dir)
         }
+        oil_names = {
+            os.path.join(oil_dir, fname): fname for fname in os.listdir(oil_dir)
+        }
+        not_oil_names = {
+            os.path.join(not_oil_dir, fname): fname for fname in os.listdir(not_oil_dir)
+        }
         self.labels = dict(oil_labels, **not_oil_labels)
+        self.names = dict(oil_names, **not_oil_names)
 
     def __len__(self):
         return len(self.images)
@@ -56,7 +63,7 @@ class CimatDataset(Dataset):
             )
         )
         if self.return_names:
-            return image, float(self.labels[image_name]), image_name
+            return image, float(self.labels[image_name]), self.names[image_name]
         else:
             return image, float(self.labels[image_name])
 
