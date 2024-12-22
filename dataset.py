@@ -12,6 +12,7 @@ class CimatDataset(Dataset):
     def __init__(
         self,
         base_dir,
+        return_names=False,
         max_images=None,
     ):
         super().__init__()
@@ -20,6 +21,7 @@ class CimatDataset(Dataset):
             base_dir,
             "classification",
         )
+        self.return_names = return_names
         # Open oil-not oil directories
         oil_dir = os.path.join(data_dir, "oil")
         not_oil_dir = os.path.join(data_dir, "not_oil")
@@ -53,7 +55,10 @@ class CimatDataset(Dataset):
                 0,
             )
         )
-        return image, self.labels[image_name]
+        if self.return_names:
+            return image, self.labels[image_name], image_name
+        else:
+            return image, self.labels[image_name]
 
 
 def prepare_dataloaders(
@@ -61,19 +66,17 @@ def prepare_dataloaders(
     train_batch_size=8,
     valid_batch_size=4,
     test_batch_size=4,
+    return_names=False,
     max_images=None,
 ):
     base_dataset = CimatDataset(
         base_dir=base_dir,
+        return_names=return_names,
         max_images=max_images,
     )
-    print(f"Len base dataset: {len(base_dataset)}")
     train_dataset, valid_dataset, test_dataset = random_split(
         base_dataset, [0.7, 0.2, 0.1]
     )
-    print(f"Len train dataset: {len(train_dataset)}")
-    print(f"Len valid dataset: {len(valid_dataset)}")
-    print(f"Len test dataset: {len(test_dataset)}")
 
     train_dataloader = DataLoader(
         train_dataset,
