@@ -30,10 +30,9 @@ class Trainer:
         train_loss = 0.0
         train_metrics = {
             "accuracy": 0.0,
+            "precision": 0.0,
             "specificity": 0.0,
-            "sensitivity": 0.0,
-            "dice": 0.0,
-            "iou": 0.0,
+            "recall": 0.0,
         }
         self.model.train()
         for image, label in dataloader:
@@ -57,10 +56,9 @@ class Trainer:
         valid_loss = 0.0
         valid_metrics = {
             "accuracy": 0.0,
+            "precision": 0.0,
             "specificity": 0.0,
-            "sensitivity": 0.0,
-            "dice": 0.0,
-            "iou": 0.0,
+            "recall": 0.0,
         }
         self.model.eval()
         for image, label in dataloader:
@@ -76,23 +74,21 @@ class Trainer:
         valid_loss = valid_loss / len(dataloader)
         return valid_loss, valid_metrics
 
-    def fit(self, dataloaders, dataset, trainset, feat_channels):
+    def fit(self, dataloaders):
         train_dataloader, valid_dataloader = dataloaders
         # Prepare metrics dict to save to a dataframe
         metrics = {
             "epoch": [],
             "train_loss": [],
             "train_accuracy": [],
+            "train_precision": [],
             "train_specificity": [],
-            "train_sensitivity": [],
-            "train_dice": [],
-            "train_iou": [],
+            "train_recall": [],
             "valid_loss": [],
             "valid_accuracy": [],
+            "valid_precision": [],
             "valid_specificity": [],
-            "valid_sensitivity": [],
-            "valid_dice": [],
-            "valid_iou": [],
+            "valid_recall": [],
             "start_time": [],
             "train_time": [],
             "valid_time": [],
@@ -109,24 +105,22 @@ class Trainer:
             valid_loss, valid_metrics = self.valid_step(valid_dataloader)
             valid_time = time.time()
             logging.info(
-                f"Epoch {epoch + 1}/{self.epochs}, train loss: {train_loss}, train accuracy: {train_metrics['accuracy']}, train specificity: {train_metrics['specificity']}, train sensitivity: {train_metrics['sensitivity']}, train dice score: {train_metrics['dice']}, train IoU: {train_metrics['iou']}, valid loss: {valid_loss}, valid accuracy: {valid_metrics['accuracy']}, valid specificity: {valid_metrics['specificity']}, valid sensitivity: {valid_metrics['sensitivity']}, valid dice: {valid_metrics['dice']}, valid iou: {valid_metrics['iou']}"
+                f"Epoch {epoch + 1}/{self.epochs}, train loss: {train_loss}, train accuracy: {train_metrics['accuracy']}, train precision: {train_metrics['precision']},train specificity: {train_metrics['specificity']}, train recall: {train_metrics['recall']}, valid loss: {valid_loss}, valid accuracy: {valid_metrics['accuracy']}, valid precision: {valid_metrics['precision']} valid specificity: {valid_metrics['specificity']}, valid recall: {valid_metrics['recall']}"
             )
             print(
-                f"Epoch {epoch + 1}/{self.epochs}, train loss: {train_loss}, train accuracy: {train_metrics['accuracy']}, train specificity: {train_metrics['specificity']}, train sensitivity: {train_metrics['sensitivity']}, train dice score: {train_metrics['dice']}, train IoU: {train_metrics['iou']}, valid loss: {valid_loss}, valid accuracy: {valid_metrics['accuracy']}, valid specificity: {valid_metrics['specificity']}, valid sensitivity: {valid_metrics['sensitivity']}, valid dice: {valid_metrics['dice']}, valid iou: {valid_metrics['iou']}"
+                f"Epoch {epoch + 1}/{self.epochs}, train loss: {train_loss}, train accuracy: {train_metrics['accuracy']}, train precision: {train_metrics['precision']},train specificity: {train_metrics['specificity']}, train recall: {train_metrics['recall']}, valid loss: {valid_loss}, valid accuracy: {valid_metrics['accuracy']}, valid precision: {valid_metrics['precision']} valid specificity: {valid_metrics['specificity']}, valid recall: {valid_metrics['recall']}"
             )
             metrics["epoch"].append(epoch + 1)
             metrics["train_loss"].append(train_loss)
             metrics["train_accuracy"].append(train_metrics["accuracy"])
+            metrics["train_precision"].append(train_metrics["precision"])
             metrics["train_specificity"].append(train_metrics["specificity"])
-            metrics["train_sensitivity"].append(train_metrics["sensitivity"])
-            metrics["train_dice"].append(train_metrics["dice"])
-            metrics["train_iou"].append(train_metrics["iou"])
+            metrics["train_recall"].append(train_metrics["recall"])
             metrics["valid_loss"].append(valid_loss)
             metrics["valid_accuracy"].append(valid_metrics["accuracy"])
+            metrics["valid_precision"].append(valid_metrics["precision"])
             metrics["valid_specificity"].append(valid_metrics["specificity"])
-            metrics["valid_sensitivity"].append(valid_metrics["sensitivity"])
-            metrics["valid_dice"].append(valid_metrics["dice"])
-            metrics["valid_iou"].append(valid_metrics["iou"])
+            metrics["valid_recall"].append(valid_metrics["recall"])
             metrics["start_time"].append(start_time)
             metrics["train_time"].append(train_time)
             metrics["valid_time"].append(valid_time)
@@ -137,7 +131,7 @@ class Trainer:
                     self.model.state_dict(),
                     os.path.join(
                         self.weights_path,
-                        f"weights_{dataset}_{trainset}_{feat_channels}_{epoch+1}_epochs.pth",
+                        f"weights_{epoch+1}_epochs.pth",
                     ),
                 )
             # Save metrics to CSV on each epoch
@@ -145,7 +139,7 @@ class Trainer:
             metrics_df.to_csv(
                 os.path.join(
                     self.metrics_path,
-                    "metrics_{dataset}_{trainset}_{feat_channels}.csv",
+                    "metrics.csv",
                 )
             )
 
