@@ -20,9 +20,6 @@ parser.add_argument(
     "--encoder_name", type=str, required=True, default="base", help="encoder to use"
 )
 parser.add_argument(
-    "--dataset", type=str, required=True, default="17", help="num of dataset to use"
-)
-parser.add_argument(
     "--weights_path",
     type=str,
     required=False,
